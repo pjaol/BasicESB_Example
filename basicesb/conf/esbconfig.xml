@@ -1,0 +1,55 @@
+<BasicESB>
+
+	<globals>
+		<arg name="lib">/Users/pjaol/Documents/workspace/BasicESB_Example/lib
+		/Users/pjaol/Documents/workspace/BasicESB_Example/dist</arg>
+	</globals>
+	
+	<controller uri="/getNews" name="get-news" timeout="10000">
+	
+		<pipes name="news">
+			<pipeline name="bbcNewsRss"/>
+			<pipeline name="guardianNewsRss"/>
+			<pipeline name="nytNewsRss"/>
+		</pipes>
+		
+		<!-- Everything here should be serial -->
+		<limiter name="limitor">
+			<pipeline name="rssCluster"/>
+		</limiter>
+		
+	</controller>
+	
+	
+	<pipeline name="bbcNewsRss" timeout="10000">
+		<evaluator name="mockEval" class="com.pjaol.ESB.Mock.MockEvaluator"/>
+		<module name="bbcRss" class="com.pjaol.ESB.RSSFetcher">
+			<arg name="url">http://feeds.bbci.co.uk/news/rss.xml</arg>
+		</module>
+	</pipeline>
+	
+	<pipeline name="guardianNewsRss" timeout="10000">
+		<evaluator name="mockEval" class="com.pjaol.ESB.Mock.MockEvaluator"/>
+		<module name="guardianRss" class="com.pjaol.ESB.RSSFetcher">
+			<arg name="url">http://feeds.guardian.co.uk/theguardian/us-home/rss</arg>
+		</module>
+	</pipeline>
+	
+	<pipeline name="nytNewsRss" timeout="10000">
+		<evaluator name="mockEval" class="com.pjaol.ESB.Mock.MockEvaluator"/>
+		<module name="nytRss" class="com.pjaol.ESB.RSSFetcher">
+			<arg name="url">http://www.nytimes.com/services/xml/rss/nyt/GlobalHome.xml</arg>
+		</module>
+	</pipeline>
+	
+	<pipeline name="rssCluster" timeout="10000">
+		<evaluator name="mockEval" class="com.pjaol.ESB.Mock.MockEvaluator"/>
+		<module name="rssCluterer" class="com.pjaol.ESB.RSSClusterModule">
+			<arg name="modules">bbcRss,guardianRss,nytRss</arg>
+			<arg name="key">content</arg>
+			<arg name="removeTerms">VIDEO</arg>
+		</module>
+	</pipeline>
+	
+	<includeFile name="jmxmonitor.xml"/>
+</BasicESB>

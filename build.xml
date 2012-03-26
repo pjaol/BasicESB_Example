@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     Mar 5, 2011 2:07:36 PM                                                        
+
+     BasicESB_Example    
+     An example of using basic esb
+                   
+     pjaol                                                                
+     ====================================================================== -->
+<project name="BasicESB_Example" default="default" xmlns:ivy="antlib:org.apache.ivy.ant">
+	<description>
+		An example of using basic esb
+    </description>
+
+	<property name="ivy.lib.dir" value="lib" />
+	<property name="depends.dir" value="depends"/>
+	
+	<property name="build.dir" value="build" />
+	<property name="dist.dir" value="dist" />
+	<property name="src.dir" value="src/java" />
+	<property name="test.src.dir" value="src/test"/>
+	<property name="compile.path" value="${src.dir}"/> <!--:${test.src.dir}"/>-->
+	
+	<path id="classpath">
+		<fileset dir="${ivy.lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${depends.dir}">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+	
+	<!-- ================================= 
+          target: default              
+         ================================= -->
+	<target name="default" depends="depends" description="Core ESB for running high performance modules">
+
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: depends                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="depends" depends="clean, setup, resolve, compile">
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: setup                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="setup">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${ivy.lib.dir}"/>
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: clean                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="clean">
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
+	</target>
+	
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: fullclean                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="fullclean" depends="clean">
+    	<delete dir="${ivy.lib.dir}"/>
+    </target>
+
+
+	<!-- ================================= 
+          target: compile              
+         ================================= -->
+	<target name="compile" description="compile java files">
+		<javac srcdir="${compile.path}" destdir="${build.dir}" classpathref="classpath" debug="on" />
+		<jar destfile="${dist.dir}/${ant.project.name}.jar" basedir="${build.dir}"/>
+	</target>
+
+
+	<!-- =================================
+	                  target: resolve
+	                 ================================= -->
+	<target name="resolve" description="--> retrieve dependencies with ivy">
+		<ivy:retrieve />
+	</target>
+
+	<!-- ================================= 
+          target: runMock              
+         ================================= -->
+    <target name="runMock" description="description">
+        <java classpathref="classpath" classname="com.pjaol.ESB.Mock.MockRunner" fork="true">
+        	<classpath>
+        		<fileset dir="${dist.dir}">
+        			<include name="*.jar"/>
+        		</fileset>
+        	</classpath>
+        	<arg value="example/conf/example.xml"/>
+        	<arg value="forever"/>
+        	<jvmarg value="-Dcom.sun.management.jmxremote"/>
+        	<jvmarg value="-Dcom.sun.management.jmxremote.port=1617"/>
+        	<jvmarg value="-Dcom.sun.management.jmxremote.authenticate=false"/>
+        	<jvmarg value="-Dcom.sun.management.jmxremote.ssl=false"/>
+        </java>
+    </target>
+
+</project>
