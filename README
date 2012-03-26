@@ -1,0 +1,47 @@
+The BasicESB_Example is an RSS aggregator that clusters results based on the title
+of each item in the rss feed. 
+
+The objective is to show how a module can be reused in the BasicESB multiple times with
+just a config change (RSSFetcher).
+
+And how a limiter can be used to take the output of all modules and combine them.
+(RSSCluterModule) 
+
+BasicESB Part is available fom https://github.com/pjaol/searchsaw
+
+Requires
+	Java 1.6 +
+	Ant 1.8.2+ (OS X users update !)
+	Apache Ivy
+
+
+Checkout BasicESB and build with Ant
+cd searchsaw/technologies/BasicESB
+ant -f build.xml
+
+This should create dist/BasicESB.war
+
+Deploy depends/BasicESB.war into tomcat following
+https://docs.google.com/document/d/1wnT_MWv0OxfO5gT23yFdAPiWEGl5V5gewaMgtDcdyMI/edit
+
+Ensure you configure tomcats/bin/setenv.sh
+export CATALINA_OPTS="-Dbasicesb.home=/Your/Path/To/BasicESB_Example/basicesb"
+
+
+Build BasicESB_Example
+cd BasicESB_Example
+ant -f build.xml
+
+This should create a dist directory with BasicESB_Example.jar in it.
+Modify BasicESB_Example/basicesb/conf/esbconfig.xml, set the global/arg/lib paths 
+to the appropriate location for your instalation.
+
+Test with hitting
+localhost:8080/BasicESB/getNews
+
+
+You should see RSS headlines clustered by a topic
+
+
+ 
+
